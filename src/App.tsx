@@ -1,27 +1,32 @@
 import { useState } from 'react';
-import { Eye, Mail, Plus } from 'lucide-react';
+import { Plus, Trash2, TrendingUp } from 'lucide-react';
 import { ThemeProvider } from '@/lib/theme/ThemeProvider';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { toast } from '@/lib/ui/toast';
 import {
-  Badge,
   Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  Checkbox,
-  FormField,
+  ConfirmDialog,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogTrigger,
+  EmptyState,
   Input,
-  Pill,
-  ProgressBar,
-  Select,
-  Skeleton,
-  Textarea,
+  Pagination,
+  Toaster,
 } from '@/components/ui';
 
 export default function App() {
-  const [progress] = useState(40);
+  const [page, setPage] = useState(2);
+  const totalPages = 5;
+  const pageSize = 20;
+  const totalCount = 87;
 
   return (
     <ThemeProvider>
@@ -32,126 +37,125 @@ export default function App() {
           <header className="flex items-center justify-between">
             <div>
               <h1 className="text-headline-xl">
-                EvolFit — <span className="text-primary">UI Base</span>
+                EvolFit — <span className="text-primary">Transversais</span>
               </h1>
               <p className="mt-1 text-body-sm text-foreground/60">
-                Etapa 6B — componentes do Kinetic Obsidian.
+                Etapa 6C — dialogs, toasts, pagination, empty state.
               </p>
             </div>
             <ThemeToggle />
           </header>
 
-          {/* Buttons */}
           <Card>
             <CardHeader>
-              <CardTitle>Button</CardTitle>
-              <CardDescription>Primary · Secondary · Ghost · Danger · Loading · Sizes</CardDescription>
+              <CardTitle>Toasts (Sonner)</CardTitle>
+              <CardDescription>Success, warning, error (sticky) e info.</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-3">
-              <Button>Primary</Button>
-              <Button variant="secondary">Secondary</Button>
-              <Button variant="ghost">Ghost</Button>
-              <Button variant="danger">Excluir</Button>
-              <Button loading>Salvando…</Button>
-              <Button size="sm">Small</Button>
-              <Button size="lg">Large</Button>
-              <Button size="icon" aria-label="Adicionar">
-                <Plus className="h-4 w-4" />
+              <Button onClick={() => toast.success('Medição salva com sucesso!')}>
+                Success
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  toast.warning(
+                    'Cota diária TinyFn atingida',
+                    'Cálculo local aproximado (TFN-002/005).',
+                  )
+                }
+              >
+                Warning
+              </Button>
+              <Button
+                variant="danger"
+                onClick={() => toast.error('Erro: rotina não encontrada (404).')}
+              >
+                Error (sticky)
+              </Button>
+              <Button variant="ghost" onClick={() => toast.info('Tudo em ordem por aqui.')}>
+                Info
               </Button>
             </CardContent>
           </Card>
 
-          {/* Inputs */}
           <Card>
             <CardHeader>
-              <CardTitle>Inputs</CardTitle>
-              <CardDescription>Estados normal, com ícones, inválido e desabilitado.</CardDescription>
+              <CardTitle>Dialogs</CardTitle>
+              <CardDescription>Radix Dialog e ConfirmDialog acessíveis (foco preso).</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <FormField label="E-mail" htmlFor="demo-email" required hint="Chave imutável de login.">
-                <Input id="demo-email" leading={<Mail className="h-4 w-4" />} placeholder="carlos@email.com" />
-              </FormField>
+            <CardContent className="flex flex-wrap gap-3">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="secondary">Abrir Dialog</Button>
+                </DialogTrigger>
+                <DialogContent
+                  title="Registrar exercício"
+                  description="Preencha os dados opcionais e confirme."
+                >
+                  <label className="text-body-sm text-foreground/80">
+                    Peso usado (kg)
+                    <Input className="mt-1" inputMode="decimal" placeholder="15.00" />
+                  </label>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="secondary">Cancelar</Button>
+                    </DialogClose>
+                    <DialogClose asChild>
+                      <Button onClick={() => toast.success('Exercício registrado.')}>
+                        Confirmar
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
 
-              <FormField label="Senha" htmlFor="demo-pass" required error="Senha deve ter ao menos 8 caracteres.">
-                <Input
-                  id="demo-pass"
-                  type="password"
-                  invalid
-                  trailing={<Eye className="h-4 w-4" />}
-                  defaultValue="123"
-                />
-              </FormField>
-
-              <FormField label="Peso (kg)" htmlFor="demo-weight">
-                <Input id="demo-weight" inputMode="decimal" placeholder="75.50" />
-              </FormField>
-
-              <FormField label="Objetivo" htmlFor="demo-goal">
-                <Select id="demo-goal" defaultValue="hypertrophy">
-                  <option value="strength">Força</option>
-                  <option value="hypertrophy">Hipertrofia</option>
-                  <option value="endurance">Resistência</option>
-                </Select>
-              </FormField>
-
-              <FormField label="Observações" htmlFor="demo-obs" className="sm:col-span-2">
-                <Textarea id="demo-obs" rows={3} placeholder="Opcional…" />
-              </FormField>
-
-              <div className="sm:col-span-2 flex items-center gap-6">
-                <Checkbox label="Peito" defaultChecked />
-                <Checkbox label="Costas" />
-                <Checkbox label="Pernas" disabled />
-              </div>
+              <ConfirmDialog
+                trigger={
+                  <Button variant="danger">
+                    <Trash2 className="h-4 w-4" />
+                    Excluir medição
+                  </Button>
+                }
+                title="Excluir medição?"
+                description="Isso remove a medição de 10/09/2026 (IMC 23.30) definitivamente."
+                confirmLabel="Excluir"
+                onConfirm={() => {
+                  toast.success('Removido.');
+                }}
+              />
             </CardContent>
           </Card>
 
-          {/* Pills & Badges */}
           <Card>
             <CardHeader>
-              <CardTitle>Pills & Badges</CardTitle>
-              <CardDescription>Módulos, status (com dot pulsante) e valores delta.</CardDescription>
+              <CardTitle>Pagination</CardTitle>
+              <CardDescription>Componente com reticências e totalCount.</CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              <div className="flex flex-wrap gap-2">
-                <Pill module="auth">Auth / Perfil</Pill>
-                <Pill module="health">Health / Saúde</Pill>
-                <Pill module="workouts">Workouts / Treinos</Pill>
-                <Pill module="dashboard">Dashboard</Pill>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Pill status="active" />
-                <Pill status="paused" />
-                <Pill status="completed" />
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge tone="success">-1.20 (-4.9%)</Badge>
-                <Badge tone="danger">+0.80</Badge>
-                <Badge tone="info">Normal weight</Badge>
-                <Badge>Atual</Badge>
-              </div>
+            <CardContent>
+              <Pagination
+                page={page}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                totalPages={totalPages}
+                onPageChange={setPage}
+              />
             </CardContent>
           </Card>
 
-          {/* Progress & Skeletons */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Progress & Skeleton</CardTitle>
-              <CardDescription>Barras com variantes e skeletons de carregamento.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <ProgressBar value={progress} showLabel />
-              <ProgressBar value={75} tone="success" showLabel />
-              <ProgressBar value={100} tone="info" showLabel />
-              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
-                <Skeleton className="h-10" />
-                <Skeleton className="h-10" />
-                <Skeleton className="h-10" />
-              </div>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={<TrendingUp className="h-5 w-5 text-primary" />}
+            title="Sem medições ainda"
+            description="Registre peso e altura para calcular IMC, BMR e TDEE via TinyFn."
+            action={
+              <Button>
+                <Plus className="h-4 w-4" />
+                Registrar primeira medição
+              </Button>
+            }
+          />
         </div>
       </div>
+      <Toaster />
     </ThemeProvider>
   );
 }
