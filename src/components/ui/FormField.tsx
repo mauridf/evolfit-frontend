@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils/cn';
 export interface FormFieldProps {
     label?: string;
     htmlFor?: string;
-    error?: string;
+    error?: string | undefined;
     hint?: string;
     required?: boolean;
     children: ReactNode;

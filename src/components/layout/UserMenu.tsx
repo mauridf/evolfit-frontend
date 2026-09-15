@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils/cn';
 export function UserMenu() {
     const user = useAuthStore((s) => s.user);
     const logoutMutation = useLogout();
-    const clear = useAuthStore((s) => s.clear);
     const navigate = useNavigate();
 
     function handleLogout() {
