@@ -1,68 +1,93 @@
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { useTheme } from '@/lib/theme/ThemeProvider';
-import { useAuthStore } from '@/stores/auth.store';
-import { Button } from '@/components/ui/Button';
+import { useEffect, useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import { Sidebar } from './Sidebar';
+import { SIDEBAR_SHORTCUTS } from './sidebarConfig';
+import { Topbar } from './Topbar';
+import { useSidebarShortcuts } from './useSidebarShortcuts';
+import { cn } from '@/lib/utils/cn';
 
-const NAV_ITEMS = [
-    { to: '/dashboard', label: 'Dashboard' },
-    { to: '/health', label: 'Saúde' },
-    { to: '/workouts', label: 'Treinos' },
-    { to: '/workouts/today', label: 'Hoje' },
-    { to: '/exercises', label: 'Exercícios' },
-    { to: '/profile', label: 'Perfil' },
-] as const;
+const STORAGE_KEY = 'evolfit:sidebarCollapsed';
 
 export function AppShell() {
-    const { theme, toggleTheme } = useTheme();
-    const user = useAuthStore((s) => s.user);
-    const clear = useAuthStore((s) => s.clear);
-    const navigate = useNavigate();
+    const [collapsed, setCollapsed] = useState(() => {
+        try {
+            return window.localStorage.getItem(STORAGE_KEY) === '1';
+        } catch {
+            return false;
+        }
+    });
+    const [mobileOpen, setMobileOpen] = useState(false);
 
-    function handleLogout() {
-        clear();
-        navigate('/login', { replace: true });
-    }
+    useSidebarShortcuts(SIDEBAR_SHORTCUTS);
+
+    useEffect(() => {
+        try {
+            window.localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0');
+        } catch {
+            /* ignore */
+        }
+    }, [collapsed]);
+
+    // Bloqueia scroll do body quando o drawer está aberto
+    useEffect(() => {
+        if (!mobileOpen) return;
+        const prev = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = prev;
+        };
+    }, [mobileOpen]);
+
+    // Esc fecha o drawer
+    useEffect(() => {
+        if (!mobileOpen) return;
+        function onKey(e: KeyboardEvent) {
+            if (e.key === 'Escape') setMobileOpen(false);
+        }
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [mobileOpen]);
 
     return (
-        <div className="flex min-h-screen flex-col bg-background text-foreground">
-            <header className="flex h-14 items-center justify-between border-b border-border bg-surface px-4">
-                <div className="flex items-center gap-4">
-                    <Link to="/dashboard" className="text-lg font-bold text-primary">
-                        EvolFit
-                    </Link>
-                    <nav className="hidden gap-3 text-sm md:flex">
-                        {NAV_ITEMS.map((item) => (
-                            <NavLink
-                                key={item.to}
-                                to={item.to}
-                                className={({ isActive }) =>
-                                    isActive ? 'font-semibold text-primary' : 'text-foreground/80 hover:text-primary'
-                                }
-                            >
-                                {item.label}
-                            </NavLink>
-                        ))}
-                    </nav>
-                </div>
-                <div className="flex items-center gap-2">
-                    <button
-                        type="button"
-                        onClick={toggleTheme}
-                        aria-label={theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
-                        className="rounded-input border border-border px-3 py-1.5 text-xs"
-                    >
-                        {theme === 'dark' ? '☀' : '🌙'}
-                    </button>
-                    {user && <span className="hidden text-sm text-surface-foreground/80 sm:inline">{user.displayName}</span>}
-                    <Button variant="ghost" size="sm" onClick={handleLogout}>
-                        Sair
-                    </Button>
-                </div>
-            </header>
+        <div className="bg-grid relative flex min-h-screen bg-background text-foreground">
+            {/* Glow global */}
+            <div className="pointer-events-none absolute left-1/2 top-0 h-[380px] w-[520px] -translate-x-1/2 rounded-full bg-emerald-500/[0.07] blur-3xl" />
 
-            <main className="flex-1 px-4 py-6">
-                <Outlet />
-            </main>
+            {/* Sidebar desktop */}
+            <div className="relative z-10 hidden md:block">
+                <Sidebar collapsed={collapsed} />
+            </div>
+
+            {/* Drawer mobile */}
+            {mobileOpen && (
+                <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Menu">
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"
+                        onClick={() => setMobileOpen(false)}
+                    />
+                    <div className="relative h-full w-64 animate-fade-in">
+                        <Sidebar collapsed={false} onNavigate={() => setMobileOpen(false)} />
+                    </div>
+                </div>
+            )}
+
+            {/* Conteúdo */}
+            <div className={cn('relative z-10 flex min-w-0 flex-1 flex-col')}>
+                <Topbar
+                    onOpenMobileSidebar={() => setMobileOpen(true)}
+                    onToggleSidebar={() => setCollapsed((c) => !c)}
+                />
+
+                <main className="flex-1 px-4 py-6 sm:px-6">
+                    <div className="mx-auto w-full max-w-6xl">
+                        <Outlet />
+                    </div>
+                </main>
+
+                <footer className="border-t border-border px-4 py-3 text-mono-label text-foreground/40 sm:px-6">
+                    © 2026 EvolFit · v2.0.0 · REST API 100%
+                </footer>
+            </div>
         </div>
     );
 }
