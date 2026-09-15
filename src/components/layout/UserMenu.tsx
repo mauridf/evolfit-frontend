@@ -2,16 +2,17 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ChevronDown, KeyRound, LogOut, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/auth.store';
+import { useLogout } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils/cn';
 
 export function UserMenu() {
     const user = useAuthStore((s) => s.user);
+    const logoutMutation = useLogout();
     const clear = useAuthStore((s) => s.clear);
     const navigate = useNavigate();
 
     function handleLogout() {
-        clear();
-        navigate('/login', { replace: true });
+        logoutMutation.mutate();
     }
 
     const initials =
