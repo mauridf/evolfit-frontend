@@ -1,7 +1,9 @@
 import { forwardRef, type ButtonHTMLAttributes } from 'react';
+import { cn } from '@/lib/utils/cn';
+import { Spinner } from './Spinner';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
-type Size = 'sm' | 'md' | 'lg';
+type Size = 'sm' | 'md' | 'lg' | 'icon';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: Variant;
@@ -10,35 +12,44 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANTS: Record<Variant, string> = {
-    primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
-    secondary: 'bg-surface text-surface-foreground border border-border hover:bg-surface/80',
-    ghost: 'bg-transparent text-foreground hover:bg-surface',
-    danger: 'bg-danger text-danger-foreground hover:bg-danger/90',
+    primary:
+        'bg-primary text-primary-foreground hover:bg-accent hover:shadow-glow active:translate-y-px',
+    secondary:
+        'bg-surface text-foreground border border-border hover:border-accent hover:text-accent',
+    ghost: 'bg-transparent text-foreground hover:bg-surface-hover',
+    danger:
+        'bg-danger/10 text-danger border border-danger/60 hover:bg-danger/20 active:translate-y-px',
 };
 
 const SIZES: Record<Size, string> = {
-    sm: 'h-8 px-3 text-xs',
-    md: 'h-10 px-4 text-sm',
-    lg: 'h-12 px-6 text-base',
+    sm: 'h-8 px-3 text-body-sm',
+    md: 'h-10 px-4 text-body-md',
+    lg: 'h-11 px-6 text-body-md',
+    icon: 'h-10 w-10 p-0',
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-    { variant = 'primary', size = 'md', loading, disabled, className = '', children, ...rest },
+    { variant = 'primary', size = 'md', loading, disabled, className, children, ...rest },
     ref,
 ) {
+    const isDisabled = disabled || loading;
+
     return (
         <button
             ref={ref}
-            disabled={disabled || loading}
-            className={`inline-flex items-center justify-center gap-2 rounded-input font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60 ${VARIANTS[variant]} ${SIZES[size]} ${className}`}
+            disabled={isDisabled}
+            aria-busy={loading || undefined}
+            className={cn(
+                'inline-flex items-center justify-center gap-2 rounded-input font-semibold transition-all',
+                'focus-visible:outline-none focus-visible:shadow-focus',
+                'disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none',
+                VARIANTS[variant],
+                SIZES[size],
+                className,
+            )}
             {...rest}
         >
-            {loading && (
-                <span
-                    aria-hidden
-                    className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-                />
-            )}
+            {loading && <Spinner size="sm" />}
             {children}
         </button>
     );
