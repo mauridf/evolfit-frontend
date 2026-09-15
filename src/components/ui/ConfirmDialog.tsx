@@ -4,7 +4,7 @@ import { Button } from './Button';
 import { cn } from '@/lib/utils/cn';
 
 export interface ConfirmDialogProps {
-    trigger: ReactNode;
+    trigger?: ReactNode;
     title: string;
     description?: ReactNode;
     confirmLabel?: string;
@@ -45,7 +45,7 @@ export function ConfirmDialog({
 
     return (
         <AlertDialog.Root open={isOpen} onOpenChange={handleOpenChange}>
-            <AlertDialog.Trigger asChild>{trigger}</AlertDialog.Trigger>
+            {trigger !== undefined && <AlertDialog.Trigger asChild>{trigger}</AlertDialog.Trigger>}
             <AlertDialog.Portal>
                 <AlertDialog.Overlay
                     className={cn(

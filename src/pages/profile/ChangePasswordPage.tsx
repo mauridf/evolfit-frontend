@@ -1,10 +1,24 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ChangePasswordDialog } from '@/components/profile/ChangePasswordDialog';
+
 export default function ChangePasswordPage() {
+    const navigate = useNavigate();
+
+    // Ao entrar na rota, o modal abre; ao fechar, volta para /profile.
+    useEffect(() => {
+        const t = setTimeout(() => {
+            // Se o usuário fechar sem interagir, voltamos pro perfil.
+        }, 0);
+        return () => clearTimeout(t);
+    }, []);
+
     return (
-        <section className="mx-auto max-w-4xl">
-            <h1 className="text-xl font-bold">Xxx</h1>
-            <p className="mt-2 text-sm text-surface-foreground/70">
-                (será implementada nas próximas etapas)
-            </p>
-        </section>
+        <ChangePasswordDialog
+            open
+            onOpenChange={(open) => {
+                if (!open) navigate('/profile', { replace: true });
+            }}
+        />
     );
 }

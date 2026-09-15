@@ -1,18 +1,15 @@
+import { useState } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ChevronDown, KeyRound, LogOut, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/auth.store';
-import { useLogout } from '@/hooks/useAuth';
+import { LogoutDialog } from '@/components/profile/LogoutDialog';
 import { cn } from '@/lib/utils/cn';
 
 export function UserMenu() {
     const user = useAuthStore((s) => s.user);
-    const logoutMutation = useLogout();
+    const [logoutOpen, setLogoutOpen] = useState(false);
     const navigate = useNavigate();
-
-    function handleLogout() {
-        logoutMutation.mutate();
-    }
 
     const initials =
         user?.displayName
@@ -76,7 +73,11 @@ export function UserMenu() {
                     <DropdownMenu.Separator className="my-1 h-px bg-border" />
 
                     <DropdownMenu.Item
-                        onSelect={handleLogout}
+                        onSelect={(e) => {
+                            // Previne o Radix de fechar o menu antes de o dialog abrir
+                            e.preventDefault();
+                            setLogoutOpen(true);
+                        }}
                         className="flex cursor-pointer items-center gap-2 rounded-micro px-2 py-1.5 text-danger outline-none data-[highlighted]:bg-danger/10"
                     >
                         <LogOut className="h-4 w-4" aria-hidden />
@@ -84,6 +85,8 @@ export function UserMenu() {
                     </DropdownMenu.Item>
                 </DropdownMenu.Content>
             </DropdownMenu.Portal>
+
+            <LogoutDialog open={logoutOpen} onOpenChange={setLogoutOpen} />
         </DropdownMenu.Root>
     );
 }
