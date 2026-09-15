@@ -3,27 +3,30 @@
 @tailwind utilities;
 
 /* =====================================================================
-   Tokens do §2 da Proposta_Tela — convertidos para HSL p/ Tailwind
+   Kinetic Obsidian — tokens do DESIGN.md + §2 da Proposta_Tela
    Dark é o padrão (html.dark). Light é ativado por html:not(.dark).
-   Contraste mínimo AA garantido.
    ===================================================================== */
 
 @layer base {
 
     :root,
     .dark {
-        /* Dark theme (padrão) */
+        /* Dark (padrão — Kinetic Obsidian) */
         --background: 222 47% 11%;
-        /* slate-900  #0F172A */
+        /* #0F172A slate-900 */
         --foreground: 210 40% 98%;
-        /* slate-50   #F8FAFC */
+        /* #F8FAFC slate-50 */
         --surface: 217 33% 17%;
-        /* slate-800  #1E293B */
+        /* #1E293B slate-800 */
         --surface-foreground: 210 40% 98%;
-        --border: 217 33% 24%;
-        --input: 217 33% 20%;
+        --surface-hover: 215 25% 27%;
+        /* #334155 slate-700 */
+        --border: 215 25% 27%;
+        /* #334155 (hairline) */
+        --input: 217 33% 13%;
+        /* #0F172A (fundo de input) */
         --ring: 160 84% 39%;
-        /* emerald-500 */
+        /* #10B981 emerald-500 */
 
         --primary: 160 84% 39%;
         /* #10B981 */
@@ -47,16 +50,16 @@
     }
 
     html:not(.dark) {
-        /* Light theme */
+        /* Light */
         --background: 0 0% 100%;
-        /* #FFFFFF */
         --foreground: 222 47% 11%;
-        /* #0F172A */
         --surface: 210 40% 96%;
         /* #F1F5F9 */
         --surface-foreground: 222 47% 11%;
+        --surface-hover: 214 32% 91%;
+        /* #E2E8F0 */
         --border: 214 32% 91%;
-        --input: 214 32% 91%;
+        --input: 0 0% 100%;
         --ring: 160 84% 30%;
 
         --primary: 160 84% 30%;
@@ -68,15 +71,12 @@
         --accent-foreground: 0 0% 100%;
 
         --success: 142 71% 40%;
-        /* #16A34A */
         --success-foreground: 0 0% 100%;
 
         --warning: 32 95% 44%;
-        /* #D97706 */
         --warning-foreground: 0 0% 100%;
 
         --danger: 0 72% 51%;
-        /* #DC2626 */
         --danger-foreground: 0 0% 100%;
     }
 
@@ -103,12 +103,14 @@
         font-feature-settings: 'rlig' 1, 'calt' 1;
     }
 
-    /* Foco visível global — §10 Acessibilidade */
+    /* Focus ring — Kinetic Obsidian: 3px emerald translúcido */
     :focus-visible {
-        @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        border-radius: inherit;
     }
 
-    /* Respeita prefers-reduced-motion — §10 */
+    /* Respeita prefers-reduced-motion — §10 Acessibilidade */
     @media (prefers-reduced-motion: reduce) {
 
         *,
@@ -119,5 +121,70 @@
             transition-duration: 0.01ms !important;
             scroll-behavior: auto !important;
         }
+    }
+}
+
+/* ---------------------------------------------------------------------
+   Utilitários de projeto (Kinetic Obsidian)
+   --------------------------------------------------------------------- */
+
+@layer components {
+
+    /* Card padrão Tier 1 (DESIGN.md) */
+    .card-tier1 {
+        @apply rounded-card border border-border/60 bg-surface shadow-tier-1;
+    }
+
+    /* Card Tier 2 — para modais/dropdowns/popovers */
+    .card-tier2 {
+        @apply rounded-card border border-border bg-surface shadow-tier-2;
+    }
+
+    /* Card interativo — glow emerald no hover */
+    .card-interactive {
+        @apply card-tier1 transition-shadow hover:shadow-glow;
+    }
+
+    /* Fundo grid (Kinetic Obsidian) */
+    .bg-grid {
+        @apply bg-grid-dark bg-grid-cell;
+    }
+
+    html:not(.dark) .bg-grid {
+        @apply bg-grid-light bg-grid-cell;
+    }
+
+    /* Texto mono pequeno para labels técnicos */
+    .mono-label {
+        @apply font-mono text-mono-label uppercase tracking-[0.04em];
+    }
+
+    /* Input base — 40px de altura, radius 12px, focus emerald */
+    .input-base {
+        @apply h-10 w-full rounded-input border border-border bg-input px-3 text-body-md text-foreground placeholder:text-foreground/40;
+        @apply transition-colors;
+    }
+
+    .input-base:focus {
+        @apply border-primary outline-none;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .input-base[aria-invalid='true'] {
+        @apply border-danger;
+    }
+
+    .input-base[aria-invalid='true']:focus {
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+    }
+
+    /* Pill base (module + status) */
+    .pill {
+        @apply inline-flex h-6 items-center gap-1.5 rounded-pill border px-2.5 text-mono-label font-medium uppercase tracking-[0.04em];
+    }
+
+    /* Dot pulsante para status */
+    .status-dot {
+        @apply inline-block h-1.5 w-1.5 rounded-full;
     }
 }
