@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =====================================================================
+   Tokens do §2 da Proposta_Tela — convertidos para HSL p/ Tailwind
+   Dark é o padrão (html.dark). Light é ativado por html:not(.dark).
+   Contraste mínimo AA garantido.
+   ===================================================================== */
+
+@layer base {
+
+    :root,
+    .dark {
+        /* Dark theme (padrão) */
+        --background: 222 47% 11%;
+        /* slate-900  #0F172A */
+        --foreground: 210 40% 98%;
+        /* slate-50   #F8FAFC */
+        --surface: 217 33% 17%;
+        /* slate-800  #1E293B */
+        --surface-foreground: 210 40% 98%;
+        --border: 217 33% 24%;
+        --input: 217 33% 20%;
+        --ring: 160 84% 39%;
+        /* emerald-500 */
+
+        --primary: 160 84% 39%;
+        /* #10B981 */
+        --primary-foreground: 222 47% 11%;
+
+        --accent: 158 64% 52%;
+        /* #34D399 */
+        --accent-foreground: 222 47% 11%;
+
+        --success: 142 71% 45%;
+        /* #22C55E */
+        --success-foreground: 222 47% 11%;
+
+        --warning: 38 92% 50%;
+        /* #F59E0B */
+        --warning-foreground: 222 47% 11%;
+
+        --danger: 0 84% 60%;
+        /* #EF4444 */
+        --danger-foreground: 210 40% 98%;
+    }
+
+    html:not(.dark) {
+        /* Light theme */
+        --background: 0 0% 100%;
+        /* #FFFFFF */
+        --foreground: 222 47% 11%;
+        /* #0F172A */
+        --surface: 210 40% 96%;
+        /* #F1F5F9 */
+        --surface-foreground: 222 47% 11%;
+        --border: 214 32% 91%;
+        --input: 214 32% 91%;
+        --ring: 160 84% 30%;
+
+        --primary: 160 84% 30%;
+        /* #059669 */
+        --primary-foreground: 0 0% 100%;
+
+        --accent: 160 84% 25%;
+        /* #047857 */
+        --accent-foreground: 0 0% 100%;
+
+        --success: 142 71% 40%;
+        /* #16A34A */
+        --success-foreground: 0 0% 100%;
+
+        --warning: 32 95% 44%;
+        /* #D97706 */
+        --warning-foreground: 0 0% 100%;
+
+        --danger: 0 72% 51%;
+        /* #DC2626 */
+        --danger-foreground: 0 0% 100%;
+    }
+
+    * {
+        @apply border-border;
+    }
+
+    html {
+        color-scheme: dark;
+    }
+
+    html:not(.dark) {
+        color-scheme: light;
+    }
+
+    html,
+    body,
+    #root {
+        height: 100%;
+    }
+
+    body {
+        @apply bg-background text-foreground font-sans antialiased;
+        font-feature-settings: 'rlig' 1, 'calt' 1;
+    }
+
+    /* Foco visível global — §10 Acessibilidade */
+    :focus-visible {
+        @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+    }
+
+    /* Respeita prefers-reduced-motion — §10 */
+    @media (prefers-reduced-motion: reduce) {
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+}
