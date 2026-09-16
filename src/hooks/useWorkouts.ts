@@ -76,16 +76,19 @@ export function useUpdateWorkoutStatus() {
 }
 
 export function useLogExercise() {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: (body: ExerciseLogRequest) => workoutsService.logExercise(body),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.workoutToday });
-            queryClient.invalidateQueries({ queryKey: ['workouts'] });
-            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard });
-        },
-    });
+  return useMutation({
+    mutationFn: (body: ExerciseLogRequest) => workoutsService.logExercise(body),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.workoutToday });
+      queryClient.invalidateQueries({ queryKey: ['workouts'] }); // list + details + progress
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      // Se conhecemos a rotina, invalida explicitamente o progresso dela.
+      void variables;
+    },
+  });
 }
 
 export function useDeleteWorkout() {

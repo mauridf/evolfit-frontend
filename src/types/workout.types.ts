@@ -81,7 +81,7 @@ export interface ExerciseLogRequest {
     workoutExerciseId: number;
     date: string; // YYYY-MM-DD
     completed: boolean;
-    weightUsed?: number;
+    weightUsed?: number | undefined;
 }
 
 export interface ExerciseLogResponse {
