@@ -11,7 +11,7 @@ import type {
 
 /* --------------------- Queries --------------------- */
 
-export function useWorkouts(params: PaginationParams & { status?: number } = {}) {
+export function useWorkouts(params: PaginationParams & { status?: number | undefined } = {}) {
     const { page = 1, pageSize = 20, status } = params;
     const queryParams = { page, pageSize, ...(status !== undefined && { status }) };
     return useQuery({

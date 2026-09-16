@@ -20,7 +20,7 @@ export function generateWorkout(
 
 /* GET /workouts?page=&pageSize=&status= */
 export function listWorkouts(
-    params: PaginationParams & { status?: number } = {},
+    params: PaginationParams & { status?: number | undefined } = {},
 ): Promise<Paginated<WorkoutRoutineListItem>> {
     const { page = 1, pageSize = 20, status } = params;
     return get<Paginated<WorkoutRoutineListItem>>('/workouts', {

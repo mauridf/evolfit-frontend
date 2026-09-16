@@ -5,6 +5,9 @@ import {
     PERIOD_DAYS_MAX,
     PERIOD_DAYS_MIN,
     WORKOUT_GOAL_LABELS,
+    type BodyPart,
+    type Difficulty,
+    type WorkoutGoal,
 } from '@/lib/constants';
 
 export const generateWorkoutSchema = z.object({
@@ -12,7 +15,8 @@ export const generateWorkoutSchema = z.object({
         .string()
         .min(3, 'O nome deve ter ao menos 3 caracteres.')
         .max(255, 'O nome deve ter no máximo 255 caracteres.'),
-    goal: z.enum(Object.keys(WORKOUT_GOAL_LABELS) as [string, ...string[]], {
+    // Casts preservando os literais — `[string, ...string[]]` alargaria para `string`.
+    goal: z.enum(Object.keys(WORKOUT_GOAL_LABELS) as [WorkoutGoal, ...WorkoutGoal[]], {
         error: 'Selecione o objetivo.',
     }),
     periodDays: z
@@ -21,9 +25,9 @@ export const generateWorkoutSchema = z.object({
         .min(PERIOD_DAYS_MIN, `O período deve estar entre ${PERIOD_DAYS_MIN} e ${PERIOD_DAYS_MAX} dias.`)
         .max(PERIOD_DAYS_MAX, `O período deve estar entre ${PERIOD_DAYS_MIN} e ${PERIOD_DAYS_MAX} dias.`),
     bodyParts: z
-        .array(z.enum(BODY_PARTS_ORDER as [string, ...string[]]))
+        .array(z.enum(BODY_PARTS_ORDER as [BodyPart, ...BodyPart[]]))
         .min(1, 'Selecione ao menos uma parte do corpo.'),
-    difficulty: z.enum(Object.keys(DIFFICULTY_LABELS) as [string, ...string[]], {
+    difficulty: z.enum(Object.keys(DIFFICULTY_LABELS) as [Difficulty, ...Difficulty[]], {
         error: 'Selecione a dificuldade.',
     }),
 });
