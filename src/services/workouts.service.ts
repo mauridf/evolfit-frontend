@@ -1,4 +1,4 @@
-import { del, get, post, put } from '@/lib/api/client';
+import { del, get, getOptional, post, put } from '@/lib/api/client';
 import type { Paginated, PaginationParams } from '@/types/api.types';
 import type {
     ExerciseLogRequest,
@@ -41,9 +41,9 @@ export function updateWorkoutStatus(
     return put<void, UpdateWorkoutStatusRequest>(`/workouts/${id}/status`, body);
 }
 
-/* GET /workouts/today */
-export function getTodayWorkout(): Promise<TodayWorkoutResponse> {
-    return get<TodayWorkoutResponse>('/workouts/today');
+/* GET /workouts/today — 404 (sem rotina ativa) vira null */
+export function getTodayWorkout(): Promise<TodayWorkoutResponse | null> {
+    return getOptional<TodayWorkoutResponse>('/workouts/today');
 }
 
 /* POST /workouts/log */

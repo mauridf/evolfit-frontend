@@ -7,7 +7,7 @@ import { useTodayWorkout } from '@/hooks/useWorkouts';
 import { formatDate, formatPercent } from '@/lib/format';
 
 export function TodayWorkoutCard() {
-    const { data, isLoading, isError } = useTodayWorkout();
+    const { data, isLoading } = useTodayWorkout();
 
     return (
         <Card>
@@ -22,7 +22,11 @@ export function TodayWorkoutCard() {
                                 {data ? data.routineName : 'Treino de Hoje'}
                             </h3>
                             <p className="text-body-sm text-foreground/60">
-                                {data ? `Dia ${data.dayNumber} · ${formatDate(data.date)}` : 'Carregando…'}
+                                {data
+                                    ? `Dia ${data.dayNumber} · ${formatDate(data.date)}`
+                                    : isLoading
+                                        ? 'Carregando…'
+                                        : 'Sem rotina ativa hoje'}
                             </p>
                         </div>
                     </div>
@@ -36,7 +40,7 @@ export function TodayWorkoutCard() {
 
                 {isLoading && <Skeleton className="h-24 w-full" />}
 
-                {isError && (
+                {!data && !isLoading && (
                     <p className="text-body-sm text-foreground/60">
                         Nenhuma rotina ativa no momento.{' '}
                         <Link to="/workouts/new" className="text-primary hover:underline">

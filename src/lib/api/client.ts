@@ -110,6 +110,38 @@ export async function get<T>(url: string, config?: AxiosRequestConfig): Promise<
     return data;
 }
 
+/**
+ * GET que trata 404 como "sem dados" (estado vazio), retornando `null`.
+ * Use apenas em endpoints agregados onde 404 significa ausência de dados
+ * (ex.: /workouts/today, /health/metrics/evolution). Em outros 404 o
+ * erro continua sendo relançado.
+ */
+export async function getOptional<T>(
+    url: string,
+    config?: AxiosRequestConfig,
+): Promise<T | null> {
+    try {
+        const { data } = await api.get<T>(url, config);
+        return data;
+    } catch (error) {
+        if (isAxiosError(error) && (error.response?.status ?? error.status) === 404)
+            return null;
+        throw error;
+    }
+}
+
+/**
+ * Duck-typing: `instanceof AxiosError` quebra quando o módulo `axios` é
+ * carregado em cópias diferentes (ex.: pnpm/host de teste).
+ */
+function isAxiosError(error: unknown): error is AxiosError {
+    return (
+        typeof error === 'object' &&
+        error !== null &&
+        (error as { isAxiosError?: boolean }).isAxiosError === true
+    );
+}
+
 export async function post<T, B = unknown>(
     url: string,
     body?: B,

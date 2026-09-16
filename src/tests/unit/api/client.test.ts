@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import MockAdapter from 'axios-mock-adapter';
-import { api, get } from '@/lib/api/client';
+import { api, get, getOptional } from '@/lib/api/client';
 import { tokenStore } from '@/lib/auth/tokenStore';
 import { AUTH_EXPIRED_EVENT, uiBus } from '@/lib/api/events';
 
@@ -8,9 +8,40 @@ import { AUTH_EXPIRED_EVENT, uiBus } from '@/lib/api/events';
 // (axios.post direto), vamos mockar com vi.spyOn(axios, 'post').
 import axios from 'axios';
 
-describe('api client — interceptor 401→refresh→replay', () => {
-    const mock = new MockAdapter(api, { onNoMatch: 'throwException' });
+// Uma única instância para os dois describes: o MockAdapter embrulha o
+// adapter da instância axios e múltiplas instâncias não se enfileiram.
+const mock = new MockAdapter(api, { onNoMatch: 'throwException' });
 
+describe('api client — getOptional (404 = estado vazio)', () => {
+    beforeEach(() => {
+        tokenStore.clear();
+        mock.reset();
+    });
+
+    it('retorna null em 404 (estado vazio)', async () => {
+        mock.onGet('/workouts/today').reply(404, {
+            title: 'Not Found',
+            status: 404,
+            detail: 'Nenhuma rotina ativa encontrada.',
+        });
+
+        await expect(getOptional('/workouts/today')).resolves.toBeNull();
+    });
+
+    it('retorna os dados em 200', async () => {
+        mock.onGet('/health/metrics/evolution').reply(200, { data: [] });
+
+        await expect(getOptional('/health/metrics/evolution')).resolves.toEqual({ data: [] });
+    });
+
+    it('relança o erro em 500 (não é estado vazio)', async () => {
+        mock.onGet('/health/metrics/evolution').reply(500, { title: 'Erro interno', status: 500 });
+
+        await expect(getOptional('/health/metrics/evolution')).rejects.toBeTruthy();
+    });
+});
+
+describe('api client — interceptor 401→refresh→replay', () => {
     beforeEach(() => {
         tokenStore.clear();
         mock.reset();

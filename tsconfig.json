@@ -24,11 +24,10 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
-    /* Path alias */
-    "baseUrl": ".",
+    /* Path alias (resolve relativo ao tsconfig; baseUrl foi removido — deprecado no TS 6) */
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ]
     }
   },
