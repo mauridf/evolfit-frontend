@@ -1,0 +1,28 @@
+# Normaliza todos os arquivos de texto para LF no repositório.
+# Git converte para CRLF no Windows apenas quando apropriado.
+* text=auto eol=lf
+
+# Binários explícitos (nunca converter)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.pdf binary
+
+# Shell scripts sempre com LF (evita problemas no Linux/macOS)
+*.sh text eol=lf
+.husky/* text eol=lf
+
+# Lockfiles são gerados — não faz sentido diff textual
+pnpm-lock.yaml -diff linguist-generated=true
+package-lock.json -diff linguist-generated=true
+yarn.lock -diff linguist-generated=true
+
+# Marca migrações do banco (não é nosso caso, mas útil se algum dia vier)
+# db/migrations/*.sql text eol=lf
