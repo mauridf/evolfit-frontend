@@ -1,10 +1,10 @@
 import { get } from '@/lib/api/client';
 import type { ExerciseDetailResponse, ExerciseSearchResponse } from '@/types/exercise.types';
 
-/* GET /exercises/search?term=...&language=english */
+/* GET /exercises/search?term=...&language=all */
 export function searchExercises(
     term: string,
-    language: 'english' | 'portuguese' = 'english',
+    language: 'all' | 'english' | 'portuguese' = 'all',
 ): Promise<ExerciseSearchResponse> {
     return get<ExerciseSearchResponse>('/exercises/search', {
         params: { term, language },
