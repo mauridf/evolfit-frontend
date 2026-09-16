@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { ACTIVITY_LEVEL_ORDER, GENDER_LABELS } from '@/lib/constants';
+import {
+    ACTIVITY_LEVEL_ORDER,
+    GENDER_LABELS,
+    type ActivityLevel,
+} from '@/lib/constants';
 import { ageSchema, heightCmSchema, weightKgSchema } from './common.schema';
 
 export const createHealthMetricSchema = z.object({
@@ -9,7 +13,8 @@ export const createHealthMetricSchema = z.object({
         error: 'Selecione o gênero.',
     }),
     age: ageSchema,
-    activityLevel: z.enum(ACTIVITY_LEVEL_ORDER as [string, ...string[]], {
+    // Cast preservando os literais — `[string, ...string[]]` alargaria para `string`.
+    activityLevel: z.enum(ACTIVITY_LEVEL_ORDER as [ActivityLevel, ...ActivityLevel[]], {
         error: 'Selecione o nível de atividade.',
     }),
 });
