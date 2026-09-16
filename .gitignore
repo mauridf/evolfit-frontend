@@ -37,3 +37,17 @@ coverage/
 
 # Render / misc
 .render/
+
+# Testes / cobertura
+coverage/
+.vitest/
+.nyc_output/
+
+# Vitest UI
+.vitest-ui/
+
+# MSW
+public/mockServiceWorker.js
+
+# Husky
+.husky/_/
