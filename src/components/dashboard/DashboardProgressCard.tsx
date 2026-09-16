@@ -12,7 +12,7 @@ const PERIODS = [30, 60, 90, 180, 365] as const;
 
 export function DashboardProgressCard({ initialPeriod = 90 }: { initialPeriod?: number }) {
     const [period, setPeriod] = useState<number>(initialPeriod);
-    const { data, isLoading } = useHealthEvolution(period);
+    const { data, isLoading, isError } = useHealthEvolution(period);
 
     return (
         <Card>
@@ -56,6 +56,17 @@ export function DashboardProgressCard({ initialPeriod = 90 }: { initialPeriod?: 
 
             <CardContent className="space-y-4 pt-6">
                 {isLoading && <Skeleton className="h-[260px] w-full" />}
+
+                {isError && (
+                    <div className="flex flex-col items-center gap-2 py-8 text-center">
+                        <p className="text-body-sm text-foreground/60">
+                            Nenhuma medição registrada no período.
+                        </p>
+                        <Link to="/health/new" className="text-body-sm font-semibold text-primary hover:text-accent">
+                            Registrar primeira medição
+                        </Link>
+                    </div>
+                )}
 
                 {data && (
                     <>

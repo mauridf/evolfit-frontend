@@ -104,8 +104,6 @@ export default function DashboardPage() {
                     </div>
 
                     <DashboardProgressCard initialPeriod={90} />
-
-                    <DashboardWeeklyCompliance days={7} />
                 </>
             )}
         </section>
